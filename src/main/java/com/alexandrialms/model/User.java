@@ -1,7 +1,6 @@
 package com.alexandrialms.model;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 public class User {
     private int userID;

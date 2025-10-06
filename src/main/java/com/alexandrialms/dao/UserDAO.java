@@ -5,7 +5,6 @@ import com.alexandrialms.model.LibraryRole;
 import com.alexandrialms.util.DBConnection;
 
 import java.sql.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -102,7 +101,7 @@ public class UserDAO {
             ResultSet rs = pstm.executeQuery();
 
             if (rs.next()) {
-                return mapResultSetToUser(rs);
+                return mapResultSet(rs);
             }
 
         } catch (SQLException e) {
@@ -120,7 +119,7 @@ public class UserDAO {
              ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                users.add(mapResultSetToUser(rs));
+                users.add(mapResultSet(rs));
             }
 
         } catch (SQLException e) {
@@ -129,7 +128,7 @@ public class UserDAO {
         return users;
     }
 
-    private User mapResultSetToUser(ResultSet rs) throws SQLException {
+    private User mapResultSet(ResultSet rs) throws SQLException {
         User user = new User();
         user.setUserID(rs.getInt("user_id"));
         user.setFirstName(rs.getString("first_name"));

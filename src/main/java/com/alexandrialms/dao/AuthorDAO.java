@@ -1,15 +1,16 @@
 package com.alexandrialms.dao;
 
+import com.alexandrialms.dao.interfaces.AuthorDAOInterface;
 import com.alexandrialms.model.Author;
-import com.alexandrialms.model.Nationality;
 import com.alexandrialms.util.DBConnection;
+import com.alexandrialms.util.ValidationHelper;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AuthorDAO {
-
+public class AuthorDAO implements AuthorDAOInterface {
+    @Override
     public List<Author> findAll() {
         List<Author> authors = new ArrayList<>();
         String sql = "SELECT author_id, first_name, last_name, nationality, birth_date FROM authors";
@@ -19,18 +20,8 @@ public class AuthorDAO {
                 ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                Author author = new Author();
-                author.setAuthorID(rs.getInt("author_id"));
-                author.setFirstName(rs.getString("first_name"));
-                author.setLastName(rs.getString("last_name"));
-                author.setNationality(rs.getString("nationality"));
 
-                Date birthDate = rs.getDate("birth_date");
-                if (birthDate != null) {
-                    author.setBirthDate(birthDate.toLocalDate());
-                }
-
-                authors.add(author);
+                authors.add(mapResultSet(rs));
             }
 
         } catch (SQLException e) {
@@ -40,9 +31,12 @@ public class AuthorDAO {
         return authors;
     }
 
-    public Author findById(int authorID) {
-        String sql = "SELECT author_id, first_name, last_name, nationality, birth_date FROM Authors WHERE author_id = ?";
-        Author author = null;
+    @Override
+    public Author findById(Integer authorID) {
+        String sql = "SELECT author_id, first_name, last_name, nationality, birth_date FROM authors WHERE author_id = ?";
+        if (!ValidationHelper.isValidAuthorID(authorID, this)) {
+            return null;
+        }
 
         try (Connection conn = DBConnection.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -51,25 +45,17 @@ public class AuthorDAO {
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
-                    author = new Author();
-                    author.setAuthorID(rs.getInt("author_id"));
-                    author.setFirstName(rs.getString("first_name"));
-                    author.setLastName(rs.getString("last_name"));
-                    author.setNationality(rs.getString("nationality"));
-                    Date birthDate = rs.getDate("birth_date");
-                    if (birthDate != null) {
-                        author.setBirthDate(birthDate.toLocalDate());
-                    }
+                    return mapResultSet(rs);
                 }
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        return author;
+        return null;
     }
 
+    @Override
     public boolean insert(Author author) {
         String sql = "INSERT INTO Authors (first_name, last_name, nationality, birth_date) VALUES (?, ?, ?, ?)";
 
@@ -105,6 +91,7 @@ public class AuthorDAO {
 
     }
 
+    @Override
     public boolean update(Author author) {
         String sql = "UPDATE authors SET first_name = ?, last_name = ?, nationality = ?, birth_date = ? WHERE author_id = ?";
 
@@ -126,7 +113,8 @@ public class AuthorDAO {
         return false;
     }
 
-    public boolean delete(int authorID) {
+    @Override
+    public boolean delete(Integer authorID) {
         String sql = "DELETE FROM authors WHERE author_id = ?";
 
         try (Connection conn = DBConnection.getConnection();
@@ -141,5 +129,63 @@ public class AuthorDAO {
             e.printStackTrace();
         }
         return false;
+    }
+
+    private Author mapResultSet(ResultSet rs) throws SQLException {
+        Author author = new Author();
+        author.setAuthorID(rs.getInt("author_id"));
+        author.setFirstName(rs.getString("first_name"));
+        author.setLastName(rs.getString("last_name"));
+        author.setNationality(rs.getString("nationality"));
+
+        Date birthDate = rs.getDate("birth_date");
+        if (birthDate != null) {
+            author.setBirthDate(birthDate.toLocalDate());
+        }
+        return author;
+
+    }
+
+    @Override
+    public List<Author> findByLastName(String lastName) {
+        String sql = "SELECT author_id, first_name, last_name, nationality, birth_date FROM authors WHERE LOWER (last_name) LIKE LOWER (?)";
+        List<Author> authors = new ArrayList<>();
+
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, "%" + lastName + "%"); //Revisar, si la tabla crece el poner % al principio consume muchos recursos de la base de datos.
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    authors.add(mapResultSet(rs));
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return authors;
+    }
+    @Override
+    public List<Author> findByNationality(String nationality) {
+        String sql = "SELECT author_id, first_name, last_name, nationality, birth_date FROM Authors WHERE LOWER (nationality) LIKE LOWER (?)";
+        List<Author> authors = new ArrayList<>();
+
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, "%" + nationality + "%"); //Revisar, si la tabla crece el poner % al principio consume muchos recursos de la base de datos.
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    authors.add(mapResultSet(rs));
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return authors;
     }
 }

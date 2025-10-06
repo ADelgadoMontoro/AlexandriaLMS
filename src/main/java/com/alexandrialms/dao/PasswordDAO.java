@@ -1,20 +1,20 @@
 package com.alexandrialms.dao;
 
+import com.alexandrialms.dao.interfaces.PasswordDAOInterface;
 import com.alexandrialms.model.Password;
 import com.alexandrialms.util.DBConnection;
 
 import java.sql.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PasswordDAO {
-
+public class PasswordDAO implements PasswordDAOInterface {
+    @Override
     public boolean insert(Password password) {
         String sql = "INSERT INTO passwords (user_id, password_hash, created_at, updated_at) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement pstm = conn.prepareStatement(sql)) {
+                PreparedStatement pstm = conn.prepareStatement(sql)) {
 
             pstm.setInt(1, password.getUserID());
             pstm.setString(2, password.getPasswordHash());
@@ -40,11 +40,12 @@ public class PasswordDAO {
         }
     }
 
+    @Override
     public boolean update(Password password) {
         String sql = "UPDATE passwords SET user_id = ?, password_hash = ?, created_at = ?, updated_at = ? WHERE password_id = ?";
 
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement pstm = conn.prepareStatement(sql)) {
+                PreparedStatement pstm = conn.prepareStatement(sql)) {
 
             pstm.setInt(1, password.getUserID());
             pstm.setString(2, password.getPasswordHash());
@@ -72,11 +73,12 @@ public class PasswordDAO {
         }
     }
 
-    public boolean delete(int passwordID) {
+    @Override
+    public boolean delete(Integer passwordID) {
         String sql = "DELETE FROM passwords WHERE password_id = ?";
 
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement pstm = conn.prepareStatement(sql)) {
+                PreparedStatement pstm = conn.prepareStatement(sql)) {
 
             pstm.setInt(1, passwordID);
             pstm.executeUpdate();
@@ -88,17 +90,18 @@ public class PasswordDAO {
         }
     }
 
-    public Password findById(int passwordID) {
+    @Override
+    public Password findById(Integer passwordID) {
         String sql = "SELECT * FROM passwords WHERE password_id = ?";
 
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement pstm = conn.prepareStatement(sql)) {
+                PreparedStatement pstm = conn.prepareStatement(sql)) {
 
             pstm.setInt(1, passwordID);
             ResultSet rs = pstm.executeQuery();
 
             if (rs.next()) {
-                return mapResultSetToPassword(rs);
+                return mapResultSet(rs);
             }
 
         } catch (SQLException e) {
@@ -107,16 +110,17 @@ public class PasswordDAO {
         return null;
     }
 
+    @Override
     public List<Password> findAll() {
         List<Password> passwords = new ArrayList<>();
         String sql = "SELECT * FROM passwords";
 
         try (Connection conn = DBConnection.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                passwords.add(mapResultSetToPassword(rs));
+                passwords.add(mapResultSet(rs));
             }
 
         } catch (SQLException e) {
@@ -125,7 +129,7 @@ public class PasswordDAO {
         return passwords;
     }
 
-    private Password mapResultSetToPassword(ResultSet rs) throws SQLException {
+    private Password mapResultSet(ResultSet rs) throws SQLException {
         Password password = new Password();
         password.setPasswordID(rs.getInt("password_id"));
         password.setUserID(rs.getInt("user_id"));
@@ -143,5 +147,48 @@ public class PasswordDAO {
 
         return password;
     }
-}
 
+    @Override
+    public Password findByUserID(int userID) {
+        String sql = "SELECT password_id, user_id, password_hash, created_at, updated_at FROM passwords WHERE user_id = ? ORDER BY created_at DESC LIMIT 1;";
+
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, userID);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSet(rs);
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    @Override
+    public List<Password> getPasswordHistory(int userID){
+        List<Password> history = new ArrayList<>();
+        String sql = "SELECT password_id, user_id, password_hash, created_at, updated_at FROM passwords WHERE user_id = ? ORDER BY created_at DESC;";
+
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, userID);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    history.add(mapResultSet(rs));
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return history;
+    }
+
+}

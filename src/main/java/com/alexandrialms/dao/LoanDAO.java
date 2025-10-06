@@ -1,32 +1,31 @@
 package com.alexandrialms.dao;
 
+import com.alexandrialms.dao.interfaces.LoanDAOInterface;
 import com.alexandrialms.model.Loan;
 import com.alexandrialms.util.DBConnection;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LoanDAO {
-
-    // INSERT
+public class LoanDAO implements LoanDAOInterface {
+    @Override
     public boolean insert(Loan loan) {
         String sql = "INSERT INTO Loans (copy_id, user_id, loan_date, return_date, returned) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement pstm = conn.prepareStatement(sql)) {
+                PreparedStatement pstm = conn.prepareStatement(sql)) {
 
             pstm.setInt(1, loan.getCopyID());
             pstm.setInt(2, loan.getUserID());
             pstm.setDate(3, Date.valueOf(loan.getLoanDate()));
-            
+
             if (loan.getReturnDate() != null) {
                 pstm.setDate(4, Date.valueOf(loan.getReturnDate()));
             } else {
                 pstm.setNull(4, Types.DATE);
             }
-            
+
             pstm.setBoolean(5, loan.isReturned());
 
             pstm.executeUpdate();
@@ -38,11 +37,12 @@ public class LoanDAO {
         }
     }
 
+    @Override
     public boolean update(Loan loan) {
         String sql = "UPDATE Loans SET copy_id = ?, user_id = ?, loan_date = ?, return_date = ?, returned = ? WHERE loan_id = ?";
 
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement pstm = conn.prepareStatement(sql)) {
+                PreparedStatement pstm = conn.prepareStatement(sql)) {
 
             pstm.setInt(1, loan.getCopyID());
             pstm.setInt(2, loan.getUserID());
@@ -66,12 +66,12 @@ public class LoanDAO {
         }
     }
 
-    // DELETE
-    public boolean delete(int loanID) {
+    @Override
+    public boolean delete(Integer loanID) {
         String sql = "DELETE FROM Loans WHERE loan_id = ?";
 
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement pstm = conn.prepareStatement(sql)) {
+                PreparedStatement pstm = conn.prepareStatement(sql)) {
 
             pstm.setInt(1, loanID);
 
@@ -84,18 +84,18 @@ public class LoanDAO {
         }
     }
 
-    // FIND BY ID
-    public Loan findById(int loanID) {
+    @Override
+    public Loan findById(Integer loanID) {
         String sql = "SELECT * FROM Loans WHERE loan_id = ?";
 
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement pstm = conn.prepareStatement(sql)) {
+                PreparedStatement pstm = conn.prepareStatement(sql)) {
 
             pstm.setInt(1, loanID);
 
             ResultSet rs = pstm.executeQuery();
             if (rs.next()) {
-                return mapResultSetToLoan(rs);
+                return mapResultSet(rs);
             }
 
         } catch (SQLException e) {
@@ -104,17 +104,17 @@ public class LoanDAO {
         return null;
     }
 
-    // FIND ALL
+    @Override
     public List<Loan> findAll() {
         List<Loan> loans = new ArrayList<>();
         String sql = "SELECT * FROM Loans";
 
         try (Connection conn = DBConnection.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                loans.add(mapResultSetToLoan(rs));
+                loans.add(mapResultSet(rs));
             }
 
         } catch (SQLException e) {
@@ -123,8 +123,7 @@ public class LoanDAO {
         return loans;
     }
 
-    // Helper: convierte un ResultSet en Loan
-    private Loan mapResultSetToLoan(ResultSet rs) throws SQLException {
+    private Loan mapResultSet(ResultSet rs) throws SQLException {
         Loan loan = new Loan();
         loan.setLoanID(rs.getInt("loan_id"));
         loan.setCopyID(rs.getInt("copy_id"));
@@ -143,5 +142,47 @@ public class LoanDAO {
         loan.setReturned(rs.getBoolean("returned"));
 
         return loan;
+    }
+
+    @Override
+    public List<Loan> findActiveLoans() {
+        List<Loan> activeLoans = new ArrayList<>();
+        String sql = "SELECT loan_id, copy_id, user_id, loan_date, return_date, returned FROM loans WHERE returned = false;";
+
+        try (Connection conn = DBConnection.getConnection();
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                activeLoans.add(mapResultSet(rs));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return activeLoans;
+    }
+
+    @Override
+    public List<Loan> findByUser(int userID) {
+        List<Loan> userLoans = new ArrayList<>();
+        String sql = "SELECT loan_id, copy_id, user_id, loan_date, return_date, returned FROM loans WHERE user_id = ?;";
+
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, userID);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    userLoans.add(mapResultSet(rs));
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return userLoans;
     }
 }
