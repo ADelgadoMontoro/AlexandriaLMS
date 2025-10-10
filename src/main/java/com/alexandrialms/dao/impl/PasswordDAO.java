@@ -1,4 +1,4 @@
-package com.alexandrialms.dao;
+package com.alexandrialms.dao.impl;
 
 import com.alexandrialms.dao.interfaces.PasswordDAOInterface;
 import com.alexandrialms.model.Password;

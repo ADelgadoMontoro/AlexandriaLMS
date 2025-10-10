@@ -1,4 +1,4 @@
-package com.alexandrialms.dao;
+package com.alexandrialms.dao.impl;
 
 import com.alexandrialms.model.User;
 import com.alexandrialms.model.LibraryRole;

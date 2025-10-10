@@ -4,15 +4,49 @@ import java.time.LocalDate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.alexandrialms.dao.AuthorDAO;
-import com.alexandrialms.dao.BookDAO;
-import com.alexandrialms.dao.CategoryDAO;
-import com.alexandrialms.dao.CopyDAO;
-import com.alexandrialms.dao.LoanDAO;
-import com.alexandrialms.dao.PasswordDAO;
-import com.alexandrialms.dao.UserDAO;
+import com.alexandrialms.dao.impl.AuthorDAO;
+import com.alexandrialms.dao.impl.BookDAO;
+import com.alexandrialms.dao.impl.CategoryDAO;
+import com.alexandrialms.dao.impl.CopyDAO;
+import com.alexandrialms.dao.impl.LoanDAO;
+import com.alexandrialms.dao.impl.PasswordDAO;
+import com.alexandrialms.dao.impl.UserDAO;
+import com.alexandrialms.exception.ValidationException;
+import com.alexandrialms.model.Author;
 
 public class ValidationHelper {
+
+    // AUTHOR VALIDATION
+
+    public static boolean isValidAuthorID(int id, AuthorDAO authorDAO) {
+        return authorDAO.findById(id) != null;
+    }
+
+    public static void validateAuthor(Author author) {
+        if (author == null) {
+            throw new ValidationException("author", "AUTHOR_NULL", "Author cannot be null");
+        }
+
+        if (!isValidString(author.getFirstName(), 2)) {
+            throw new ValidationException("firstName", "INVALID_FIRST_NAME",
+                    "First name is required and must be at least 2 characters long");
+        }
+
+        if (!isValidString(author.getLastName(), 2)) {
+            throw new ValidationException("lastName", "INVALID_LAST_NAME",
+                    "Last name is required and must be at least 2 characters long");
+        }
+
+        if (author.getBirthDate() != null && author.getBirthDate().isAfter(LocalDate.now())) {
+            throw new ValidationException("birthDate", "FUTURE_BIRTH_DATE",
+                    "Birth date cannot be in the future");
+        }
+
+        if (author.getBirthDate() != null && author.getBirthDate().isAfter(LocalDate.now().minusYears(10))) {
+            throw new ValidationException("birthDate", "AUTHOR_TOO_YOUNG",
+                    "Author must be at least 10 years old");
+        }
+    }
 
     public static boolean isValidISBN(String isbn) {
         if (isbn == null)
@@ -92,12 +126,6 @@ public class ValidationHelper {
                 .anyMatch(c -> c.getUserID() == id);
     }
 
-    public static boolean isValidAuthorID(int id, AuthorDAO authorDAO) {
-        return authorDAO.findAll()
-                .stream()
-                .anyMatch(c -> c.getAuthorID() == id);
-    }
-
     public static boolean isValidLoanID(int id, LoanDAO loanDAO) {
         return loanDAO.findAll()
                 .stream()
@@ -145,5 +173,17 @@ public class ValidationHelper {
             return validNumber && validLength;
         }
         return false;
+
     }
+
+    // Metahelper methods
+
+    public static boolean isValidString(String value) {
+        return value != null && !value.trim().isEmpty();
+    }
+
+    public static boolean isValidString(String value, int minLength) {
+        return isValidString(value) && value.trim().length() >= minLength;
+    }
+
 }

@@ -1,4 +1,4 @@
-package com.alexandrialms.dao;
+package com.alexandrialms.dao.impl;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,8 +13,8 @@ import com.alexandrialms.model.Copy;
 import com.alexandrialms.model.CopyStatus;
 import com.alexandrialms.util.DBConnection;
 
-public class CopyDAO implements GenericDAO<Copy, Integer>{
-        @Override
+public class CopyDAO implements GenericDAO<Copy, Integer> {
+    @Override
 
     public List<Copy> findAll() {
         List<Copy> copies = new ArrayList<>();
@@ -33,6 +33,7 @@ public class CopyDAO implements GenericDAO<Copy, Integer>{
         }
         return copies;
     }
+
     @Override
 
     public Copy findById(Integer id) {

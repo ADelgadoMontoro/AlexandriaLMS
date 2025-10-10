@@ -1,4 +1,4 @@
-package com.alexandrialms.dao;
+package com.alexandrialms.dao.impl;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -7,7 +7,6 @@ import java.util.List;
 import com.alexandrialms.dao.interfaces.BookDAOInterface;
 import com.alexandrialms.model.Book;
 import com.alexandrialms.util.DBConnection;
-import com.alexandrialms.util.ValidationHelper;
 
 public class BookDAO implements BookDAOInterface {
     @Override
@@ -28,9 +27,6 @@ public class BookDAO implements BookDAOInterface {
 
     @Override
     public Book findById(Integer bookID) {
-        if (!ValidationHelper.isValidBookID(bookID,this)){
-            return null;
-        }
         String sql = "SELECT book_id, title, isbn, publication_year, category_id from books where book_id = ?;";
         try (
                 Connection conn = DBConnection.getConnection();
@@ -85,9 +81,6 @@ public class BookDAO implements BookDAOInterface {
 
     @Override
     public boolean delete(Integer bookID) {
-        if (!ValidationHelper.isValidBookID(bookID, this)){
-            return false;
-        }
         String sql= "DELETE FROM books WHERE book_id = ?";
         try (Connection conn = DBConnection.getConnection();
                 PreparedStatement pstm = conn.prepareStatement(sql);) {
@@ -113,9 +106,6 @@ public class BookDAO implements BookDAOInterface {
 
     @Override
     public Book findByISBN(String isbn) {
-        if (!ValidationHelper.isValidISBN(isbn)) {
-            return null;
-        }
         String sql = "SELECT book_id, title, isbn, publication_year, category_id from books where isbn = ?;";
         try (
                 Connection conn = DBConnection.getConnection();

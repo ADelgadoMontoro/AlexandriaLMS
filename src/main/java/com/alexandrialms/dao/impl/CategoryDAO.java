@@ -1,4 +1,4 @@
-package com.alexandrialms.dao;
+package com.alexandrialms.dao.impl;
 
 import com.alexandrialms.dao.interfaces.GenericDAO;
 import com.alexandrialms.model.Category;

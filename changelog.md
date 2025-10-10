@@ -1,5 +1,24 @@
 # Changelog — AlexandriaLMS
 
+## [v0.5.0] - 2025-10-06  
+### Added
+- Created `service` layer with:
+  - `AuthorServiceInterface` and `BookServiceInterface`
+  - `AuthorServiceImpl` implementation
+- Added `ValidationException` class for centralized validation error handling
+- Introduced new author validation methods in `ValidationHelper`
+- Added several new query and utility methods to `AuthorDAOInterface` and `AuthorDAOImpl`
+
+### Changed
+- Reorganized DAO package structure:
+  - Implementations moved to `dao/impl`
+  - Interfaces kept in `dao/interfaces`
+- Updated project structure documentation in `README.md` to reflect new organization
+
+### Notes
+- This update introduces a clear separation between **data access (DAO)** and **business logic (Service)** layers.  
+- The project is now closer to a layered architecture model, preparing the groundwork for future integration with Spring.
+
 ## [v0.2.0] - 2025-10-06
 
 ### Added

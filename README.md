@@ -28,15 +28,62 @@ The main tables are:
 - `Book_Author` (N:M relationship between books and authors)  
 - `Passwords` (credential management with hashing)  
 
+## Architecture Decisions
+- **Why JDBC first?** → Understand low-level database operations
+- **Why MariaDB?** → Lightweight, production-ready
+- **Layered architecture** → Separation of concerns
+
 ## Project Structure
+
+Update Note:
+The project structure has been reorganized to improve modularity and maintainability.
+DAO implementations are now separated under dao/impl, and a new service layer has been introduced to handle business logic and validation before DAO interaction.
+
 ```bash
-alexandria/
-├── src/
-│   ├── main/java/ # Source code
-│   ├── main/resources/ # Configuration
-│   └── test/ # Tests
-├── pom.xml # Maven configuration
+📦 AlexandriaLMS
+├── 📂 src
+│   ├── 📂 com
+│   │   └── 📂 alexandrialms
+│   │       ├── 📂 dao
+│   │       │   ├── 📂 impl                     # NEW: DAO implementations
+│   │       │   │   ├── AuthorDAO.java
+│   │       │   │   ├── BookDAO.java
+│   │       │   │   └── (other DAO implementations)
+│   │       │   └── 📂 interfaces
+│   │       │       ├── AuthorDAOInterface.java
+│   │       │       ├── BookDAOInterface.java
+│   │       │       ├── GenericDAO.java
+│   │       │       └── (other DAO interfaces)
+│   │       │    
+│   │       │
+│   │       ├── 📂 model
+│   │       │   ├── Author.java
+│   │       │   ├── Book.java
+│   │       │   └── (other entity classes)
+│   │       │
+│   │       ├── 📂 service                     # NEW: Service Layer
+│   │       │   ├── 📂 interfaces
+│   │       │   │   ├── AuthorServiceInterface.java
+│   │       │   │   ├── BookServiceInterface.java
+│   │       │   │   └── (future service interfaces)
+│   │       │   ├── 📂 impl
+│   │       │   │   ├── AuthorServiceImpl.java
+│   │       │   │   └── (future service implementations)
+│   │       │
+│   │       ├── 📂 util
+│   │       │   ├── ValidationHelper.java
+│   │       │   ├── ValidationException.java # NEW: custom exception
+│   │       │   └── DBConnection.java    
+│   │       │
+│   │       └── 📂 test
+│   │           ├── ValidationHelperTest.java
+│   │           └── (other test classes)
+│   │
+│   └── 📂 resources
+│       └── (SQL scripts, config files, etc.)
+│
 ├── README.md
+├── CHANGELOG.md
 └── .gitignore
 ```
 

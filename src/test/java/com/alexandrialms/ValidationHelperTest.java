@@ -6,8 +6,8 @@ import org.junit.Before;
 import java.time.LocalDate;
 import java.util.Arrays;
 
-import com.alexandrialms.dao.CategoryDAO;
-import com.alexandrialms.dao.UserDAO;
+import com.alexandrialms.dao.impl.CategoryDAO;
+import com.alexandrialms.dao.impl.UserDAO;
 import com.alexandrialms.model.Category;
 import com.alexandrialms.model.User;
 import com.alexandrialms.util.ValidationHelper;
