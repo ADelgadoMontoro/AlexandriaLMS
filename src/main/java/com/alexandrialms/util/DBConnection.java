@@ -13,7 +13,8 @@
         private static Properties properties;
         private DBConnection() { }
         
-        static{
+        static{ // Carga las propiedades al iniciar la clase. Se ejecuta una sola vez. El que ponga static{} quiere decir que se
+                // ejecuta al cargar la clase.
             properties = new Properties();
             try (InputStream is = DBConnection.class.getClassLoader().getResourceAsStream("db.properties")) {
                 if (is == null) {

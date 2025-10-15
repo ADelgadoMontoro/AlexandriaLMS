@@ -129,7 +129,7 @@ public class AuthorDAO implements AuthorDAOInterface {
         return false;
     }
 
-    private Author mapResultSet(ResultSet rs) throws SQLException {
+    Author mapResultSet(ResultSet rs) throws SQLException { // Visible a nivel de package para que BookDAO pueda usarlo
         Author author = new Author();
         author.setAuthorID(rs.getInt("author_id"));
         author.setFirstName(rs.getString("first_name"));
@@ -152,8 +152,7 @@ public class AuthorDAO implements AuthorDAOInterface {
         try (Connection conn = DBConnection.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setString(1, "%" + lastName + "%"); // Revisar, si la tabla crece el poner % al principio consume
-                                                      // muchos recursos de la base de datos.
+            pstmt.setString(1, "%" + lastName + "%");
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
                     authors.add(mapResultSet(rs));

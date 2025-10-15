@@ -13,20 +13,28 @@ The project is designed as a progressive learning experience in several phases:
 - **Version 6**: Extras (security, exports, notifications).  
 
 ## Technologies
-- **Language**: Java 17+  
+- **Language**: Java 25  
 - **Dependency manager**: Maven  
 - **Database**: MariaDB  
 - **Tools**: JDBC, Spring Boot (later), JPA/Hibernate  
 
 ## Initial Database
 The main tables are:  
-- `Book` (book information)  
-- `Author` (authors)  
-- `User` (registered users)  
-- `Loan` (book loans)  
-- `Category` (book classification)  
-- `Book_Author` (N:M relationship between books and authors)  
-- `Passwords` (credential management with hashing)  
+- `books` (book information)  
+- `authors` (authors information)  
+- `users` (registered users)  
+- `loans` (book loans tracking)  
+- `categories` (book classification)  
+- `copies` (physical book copies inventory)
+- `book_author` (N:M relationship between books and authors)  
+- `passwords` (credential management with hashing)
+
+## Key Relationships
+- **Books ↔ Authors**: Many-to-many via `book_author` junction table
+- **Books ↔ Categories**: Many-to-one (each book belongs to one category)
+- **Books ↔ Copies**: One-to-many (each book can have multiple physical copies)
+- **Copies ↔ Loans**: One-to-many (each copy can have multiple loan records over time)
+- **Users ↔ Loans**: One-to-many (each user can have multiple active loans)  
 
 ## Architecture Decisions
 - **Why JDBC first?** → Understand low-level database operations
@@ -90,7 +98,7 @@ DAO implementations are now separated under dao/impl, and a new service layer ha
 ## How to Run
 1. Clone the repository:
    ```bash
-   git clone https://github.com/adelgadomontoro/alexandria.git
+   git clone https://github.com/ADelgadoMontoro/AlexandriaLMS.git
 2. Configure the database in src/main/resources/application.properties
 3. Build with Maven: mvn clean install
 4. Run: mvn exec:java
