@@ -40,11 +40,19 @@ public class AuthorServiceImpl implements AuthorServiceInterface {
 
     @Override
     public List<Author> findAuthorsByName(String name) {
+        if (!ValidationHelper.isValidString(name, 2)) {
+            throw new ValidationException("name", "INVALID_NAME",
+                    "The name must be at least 2 characters long");
+        }
         return authorDAO.findByLastName(name);
     }
 
     @Override
     public List<Author> findAuthorsByNationality(String nationality) {
+        if (!ValidationHelper.isValidString(nationality, 2)) {
+            throw new ValidationException("name", "INVALID_NAME",
+                    "The nationality must be at least 2 characters long");
+        }
         return authorDAO.findByNationality(nationality);
     }
 
@@ -63,8 +71,8 @@ public class AuthorServiceImpl implements AuthorServiceInterface {
 
     @Override
     public boolean deleteAuthor(int authorId) {
-        if (!authorExists(authorId)) {
-            throw new ValidationException("authorId", "NON_EXISTING_AUTHOR", "The author does not exist");
+        if (!ValidationHelper.isValidAuthorID(authorId, authorDAO)) {
+            return false;
         }
         return authorDAO.delete(authorId);
     }
@@ -88,5 +96,7 @@ public class AuthorServiceImpl implements AuthorServiceInterface {
     public List<Author> findAuthorsWithBooks() {
         return authorDAO.findAuthorsWithBooks();
     }
+    public AuthorServiceImpl() {
+        this.authorDAO = new AuthorDAO();}
 
 }

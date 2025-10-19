@@ -1,5 +1,40 @@
 # Changelog — AlexandriaLMS
 
+## [v0.8.0] - 2025-10-19
+### Added
+- **Complete Service Layer Implementation:**
+  - `BookServiceImpl` with 45+ business methods
+  - `AuthorServiceImpl` with comprehensive author management
+  - `CategoryServiceImpl` with 19 category operations
+  - Complete service interfaces for all entities
+- **Advanced Validation System:**
+  - `ValidationHelper` expanded with book, author, and category validations
+  - `validateBookForInsert()`, `validateBookForUpdate()`, `validateCategoryForInsert()`, etc.
+  - Fail-fast validation pattern across all services
+- **Comprehensive Integration Testing:**
+  - `BookServiceIntegrationTest`: 15 passing tests
+  - `AuthorServiceIntegrationTest`: 18 passing tests  
+  - `CategoryServiceIntegrationTest`: 24 passing tests
+  - Total: 57 integration tests covering CRUD, search, statistics, and business logic
+- **Enhanced DAO Layer:**
+  - `CategoryDAOInterface` with 13 advanced methods
+  - Complete `CategoryDAOImpl` implementation
+  - Advanced search, statistics, and maintenance operations
+
+### Changed
+- **Architecture Refinement:**
+  - Solidified layered architecture: Model → DAO → Service → Tests
+  - Consistent error handling with `ValidationException`
+  - Proper use of `Optional` for "not found" scenarios
+- **Validation Patterns:**
+  - Unified validation approach across all services
+  - Separation of business validation vs data access
+
+### Notes
+- **Core business services implemented** with comprehensive testing
+- **Solid architectural foundation** established for remaining entities
+- **Testing patterns defined** for easy extension to Copy, Loan, User, and Password services
+
 ## [v0.5.0] - 2025-10-06  
 ### Added
 - Created `service` layer with:

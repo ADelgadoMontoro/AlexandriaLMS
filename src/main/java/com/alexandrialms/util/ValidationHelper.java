@@ -13,13 +13,157 @@ import com.alexandrialms.dao.impl.PasswordDAO;
 import com.alexandrialms.dao.impl.UserDAO;
 import com.alexandrialms.exception.ValidationException;
 import com.alexandrialms.model.Author;
+import com.alexandrialms.model.Book;
+import com.alexandrialms.model.Category;
 
 public class ValidationHelper {
 
-    // AUTHOR VALIDATION
+    public static void validateCategory(Category category) throws ValidationException {
+        if (category == null) {
+            throw new ValidationException("category", "CATEGORY_NULL", "Category cannot be null");
+        }
+
+        if (!isValidString(category.getName(), 2)) {
+            throw new ValidationException("name", "INVALID_CATEGORY_NAME",
+                    "Category name is required and must be at least 2 characters long");
+        }
+
+        if (category.getName().length() > 100) {
+            throw new ValidationException("name", "CATEGORY_NAME_TOO_LONG",
+                    "Category name cannot exceed 100 characters");
+        }
+
+        // Validar descripción
+        if (!isValidString(category.getDescription(), 1)) {
+            throw new ValidationException("description", "INVALID_CATEGORY_DESCRIPTION",
+                    "Category description is required");
+        }
+
+        if (category.getDescription().length() > 500) {
+            throw new ValidationException("description", "CATEGORY_DESCRIPTION_TOO_LONG",
+                    "Category description cannot exceed 500 characters");
+        }
+    }
+
+    public static void validateCategoryForInsert(Category category, CategoryDAO categoryDAO)
+            throws ValidationException {
+        validateCategory(category);
+
+        if (categoryDAO.existsByName(category.getName())) {
+            throw new ValidationException("name", "DUPLICATE_CATEGORY_NAME",
+                    "A category with name '" + category.getName() + "' already exists");
+        }
+    }
+
+    public static void validateCategoryForUpdate(Category category, CategoryDAO categoryDAO)
+            throws ValidationException {
+        validateCategory(category);
+
+        if (!isValidCategoryID(category.getCategoryID(), categoryDAO)) {
+            throw new ValidationException("categoryId", "CATEGORY_NOT_FOUND",
+                    "Category with ID " + category.getCategoryID() + " does not exist");
+        }
+
+        Category existingCategoryWithName = categoryDAO.findByName(category.getName());
+        if (existingCategoryWithName != null && existingCategoryWithName.getCategoryID() != category.getCategoryID()) {
+            throw new ValidationException("name", "DUPLICATE_CATEGORY_NAME",
+                    "Another category with name '" + category.getName() + "' already exists");
+        }
+    }
+
+    public static void validateCategoryDeletion(int categoryId, CategoryDAO categoryDAO) throws ValidationException {
+        if (!isValidCategoryID(categoryId, categoryDAO)) {
+            throw new ValidationException("categoryId", "CATEGORY_NOT_FOUND",
+                    "Category with ID " + categoryId + " does not exist");
+        }
+
+        int booksCount = categoryDAO.countBooksInCategory(categoryId);
+        if (booksCount > 0) {
+            throw new ValidationException("categoryId", "CATEGORY_HAS_BOOKS",
+                    "Cannot delete category with ID " + categoryId + " - it has " + booksCount + " books associated");
+        }
+    }
+
+    public static void validateSearchTerm(String searchTerm, int minLength) throws ValidationException {
+        if (!isValidString(searchTerm, minLength)) {
+            throw new ValidationException("searchTerm", "INVALID_SEARCH_TERM",
+                    "Search term must be at least " + minLength + " characters long");
+        }
+    }
+
+    public static void validateLimit(int limit) throws ValidationException {
+        if (limit <= 0) {
+            throw new ValidationException("limit", "INVALID_LIMIT",
+                    "Limit must be greater than 0");
+        }
+    }
 
     public static boolean isValidAuthorID(int id, AuthorDAO authorDAO) {
         return authorDAO.findById(id) != null;
+    }
+
+    public static void validateBookForUpdate(int bookId, Book book, BookDAO bookDAO) throws ValidationException {
+        if (book == null) {
+            throw new ValidationException("book", "BOOK_NULL", "Book cannot be null");
+        }
+
+        if (!isValidBookID(bookId, bookDAO)) {
+            throw new ValidationException("bookId", "BOOK_NOT_FOUND",
+                    "Book with ID " + bookId + " does not exist");
+        }
+
+        validateBook(book);
+
+        Book existingBookWithISBN = bookDAO.findByISBN(book.getIsbn());
+        if (existingBookWithISBN != null && existingBookWithISBN.getBookID() != bookId) {
+            throw new ValidationException("isbn", "DUPLICATE_ISBN",
+                    "Another book with ISBN " + book.getIsbn() + " already exists");
+        }
+    }
+
+    public static void validateBookForInsert(Book book, BookDAO bookDAO) throws ValidationException {
+        if (book == null) {
+            throw new ValidationException("book", "BOOK_NULL", "Book cannot be null");
+        }
+
+        validateBook(book);
+
+        if (bookDAO.existsByISBN(book.getIsbn())) {
+            throw new ValidationException("isbn", "DUPLICATE_ISBN",
+                    "A book with ISBN " + book.getIsbn() + " already exists");
+        }
+
+    }
+
+    public static void validateBook(Book book) throws ValidationException {
+        if (book == null) {
+            throw new ValidationException("book", "BOOK_NULL", "Book cannot be null");
+        }
+
+        if (!isValidString(book.getTitle(), 1)) {
+            throw new ValidationException("title", "INVALID_TITLE",
+                    "Title is required and cannot be empty");
+        }
+
+        if (book.getTitle().length() > 500) {
+            throw new ValidationException("title", "TITLE_TOO_LONG",
+                    "Title cannot exceed 500 characters");
+        }
+
+        if (!isValidISBN(book.getIsbn())) {
+            throw new ValidationException("isbn", "INVALID_ISBN",
+                    "ISBN must be 10 or 13 digits with valid format");
+        }
+
+        if (book.getPubYear() < 500 || book.getPubYear() > java.time.Year.now().getValue()) {
+            throw new ValidationException("pubYear", "INVALID_PUBLICATION_YEAR",
+                    "Publication year must be between 500 and current year");
+        }
+
+        if (book.getCategoryId() <= 0) {
+            throw new ValidationException("categoryId", "INVALID_CATEGORY_ID",
+                    "Category ID must be positive");
+        }
     }
 
     public static void validateAuthor(Author author) {
@@ -175,8 +319,6 @@ public class ValidationHelper {
         return false;
 
     }
-
-    // Metahelper methods
 
     public static boolean isValidString(String value) {
         return value != null && !value.trim().isEmpty();

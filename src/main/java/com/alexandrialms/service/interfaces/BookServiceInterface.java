@@ -1,34 +1,80 @@
 package com.alexandrialms.service.interfaces;
 
+import com.alexandrialms.model.Author;
 import com.alexandrialms.model.Book;
+import com.alexandrialms.exception.ValidationException;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface BookServiceInterface {
     
-    Book createBook(Book book);
-    Book createBookWithAuthor(Book book, int authorId);
-    Optional<Book> findBookById(int bookId);
-    List<Book> findAllBooks();
-    Optional<Book> findBookByIsbn(String isbn);
-    List<Book> findBooksByTitle(String title);
-    List<Book> findBooksByCategory(int categoryId);
-    List<Book> findBooksByAuthor(int authorId);
-    List<Book> findBooksByPublicationYear(int year);
-    List<Book> findBooksByPublicationYearRange(int startYear, int endYear);
-    List<Book> searchBooks(String searchTerm);
-    List<Book> findBooksByTitleContaining(String partialTitle);
-    Optional<Book> updateBook(Book book);
-    boolean updateBookCategory(int bookId, int categoryId);
-    boolean deleteBook(int bookId);
-    int deleteBooksWithNoCopies();
-    boolean bookExists(int bookId);
-    boolean isbnExists(String isbn);
-    boolean isBookAvailableForLoan(int bookId);
-    int countBooks();
-    int countBooksByCategory(int categoryId);
-    int countBooksByAuthor(int authorId);
-    int getTotalCopiesCount(int bookId);
-    int getAvailableCopiesCount(int bookId);
-    boolean hasAvailableCopies(int bookId);
+    // CRUD OPERATIONS
+    Optional<Book> createBook(Book book) throws ValidationException;
+    Optional<Book> getBookById(int bookId) throws ValidationException;
+    boolean updateBook(int bookId, Book book) throws ValidationException;
+    boolean deleteBook(int bookId) throws ValidationException;
+    
+    // BASIC SEARCH OPERATIONS
+    List<Book> getAllBooks();
+    List<Book> searchBooks(String searchTerm) throws ValidationException;
+    List<Book> getBooksByTitle(String title) throws ValidationException;
+    Optional<Book> getBookByISBN(String isbn) throws ValidationException;
+    List<Book> getBooksByPublicationYear(int year) throws ValidationException;
+    List<Book> getBooksByPublicationYearRange(int startYear, int endYear) throws ValidationException;
+    List<Book> getBooksByCategory(int categoryId) throws ValidationException;
+    List<Book> getBooksByCategoryName(String categoryName) throws ValidationException;
+    
+    // ADVANCED SEARCH OPERATIONS
+    List<Book> getBooksByTitleAndYear(String title, int year) throws ValidationException;
+    List<Book> getBooksByCategoryAndYear(int categoryId, int year) throws ValidationException;
+    
+    // PAGINATION OPERATIONS
+    List<Book> getBooksByTitlePaginated(String title, int limit, int offset) throws ValidationException;
+    List<Book> getBooksByCategoryPaginated(int categoryId, int limit, int offset) throws ValidationException;
+    List<Book> getAllBooksPaginated(int limit, int offset) throws ValidationException;
+    
+    // STATISTICS OPERATIONS
+    int getBooksCountByCategory(int categoryId) throws ValidationException;
+    int getBooksCountByPublicationYear(int year) throws ValidationException;
+    Map<Integer, Integer> getBooksCountByYear() throws ValidationException;
+    Map<Integer, Integer> getBooksCountByCategory() throws ValidationException;
+    int getTotalBooksCount();
+    
+    // AVAILABILITY OPERATIONS
+    List<Book> getAvailableBooks();
+    List<Book> getUnavailableBooks();
+    int getAvailableCopiesCount(int bookId) throws ValidationException;
+    int getTotalCopiesCount(int bookId) throws ValidationException;
+    boolean isBookAvailable(int bookId) throws ValidationException;
+    
+    // POPULARITY OPERATIONS
+    List<Book> getMostBorrowedBooks(int limit) throws ValidationException;
+    List<Book> getRecentlyAddedBooks(int limit) throws ValidationException;
+    
+    // AUTHOR RELATIONSHIP MANAGEMENT
+    boolean addAuthorToBook(int bookId, int authorId) throws ValidationException;
+    boolean removeAuthorFromBook(int bookId, int authorId) throws ValidationException;
+    boolean setBookAuthors(int bookId, List<Integer> authorIds) throws ValidationException;
+    List<Author> getBookAuthors(int bookId) throws ValidationException;
+    
+    // AUTHOR-BASED SEARCH OPERATIONS
+    List<Book> getBooksByAuthor(int authorId) throws ValidationException;
+    List<Book> getBooksByAuthorName(String authorName) throws ValidationException;
+    List<Book> getBooksByAuthorAndCategory(int authorId, int categoryId) throws ValidationException;
+    
+    // ADVANCED AUTHOR SEARCH OPERATIONS
+    List<Book> getBooksByMultipleAuthors(List<Integer> authorIds) throws ValidationException;
+    List<Book> searchBooksWithAuthors(String searchTerm) throws ValidationException;
+    
+    // VALIDATION OPERATIONS
+    boolean bookExistsByISBN(String isbn);
+    boolean bookExistsByTitleAndYear(String title, int year);
+    boolean bookHasAuthor(int bookId, int authorId) throws ValidationException;
+    int getBooksCountByAuthor(int authorId) throws ValidationException;
+    
+    // BATCH OPERATIONS
+    int deleteBooksByCategory(int categoryId) throws ValidationException;
+    int updateBooksCategory(int oldCategoryId, int newCategoryId) throws ValidationException;
+    int deleteBooksWithNoCopies() throws ValidationException;
 }

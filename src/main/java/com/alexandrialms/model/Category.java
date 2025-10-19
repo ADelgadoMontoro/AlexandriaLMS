@@ -31,6 +31,10 @@ public class Category {
         this.name = name;
         this.description = description;
     }
+    public Category(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
     @Override
     public String toString() {
         return "Category [categoryID=" + categoryID + ", name=" + name + ", description=" + description + "]";
