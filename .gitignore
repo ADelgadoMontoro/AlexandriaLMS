@@ -20,3 +20,4 @@ hs_err_pid*
 .vscode/
 src/main/resources/db.properties
 *.code-workspace
+Alexandria.session.sql

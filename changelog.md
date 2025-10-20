@@ -1,4 +1,54 @@
 # Changelog — AlexandriaLMS
+## [v0.9.0] - 2025-01-20
+### Added
+- **Complete User Management System:**
+  - `UserDAOImpl` with 25+ data access methods
+  - `UserServiceInterface` with 45+ business operations
+  - `UserServiceImpl` complete implementation
+  - `UserServiceIntegrationTest` with 22 passing tests
+
+- **Complete Copy Management System:**
+  - `CopyDAOInterface` with comprehensive inventory operations
+  - `CopyServiceInterface` with availability management
+  - `CopyServiceImpl` complete implementation
+  - Copy entity model with status management
+  - Copy validation methods in `ValidationHelper`
+
+- **Enhanced User Features:**
+  - Role-based loan limits (`LibraryRole` enum with loan limits)
+  - Advanced user search and filtering capabilities
+  - Comprehensive user statistics and reporting
+  - User eligibility validation for loans
+  - Pagination support for user listings
+
+- **Advanced Validation System:**
+  - User-specific validations in `ValidationHelper`
+  - Copy-specific validations (status, availability, uniqueness)
+  - Email and phone format validation
+  - Date range validation for registration periods
+  - User and copy existence checks
+
+### Changed
+- **Architecture Refinements:**
+  - Enhanced DAO method consistency across implementations
+  - Improved service layer error handling patterns
+
+- **Validation Patterns:**
+  - Unified validation approach for user and copy operations
+  - Consistent exception handling across all services
+  - Enhanced business rule enforcement
+
+### Technical Debt
+- **Pending Implementations:**
+  - `LoanDAO` and `LoanService` implementations
+  - `PasswordDAO` and `PasswordService` implementations
+  - Integration between User, Copy and Loan services
+
+### Notes
+- **User and Copy modules completed** with comprehensive implementations
+- **Ready for Loan service implementation** as final core entity
+- **Foundation established** for complete library loan workflow
+- **All user service integration tests passing** (22/22)
 
 ## [v0.8.0] - 2025-10-19
 ### Added

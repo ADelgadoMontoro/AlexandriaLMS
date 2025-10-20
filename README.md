@@ -48,46 +48,65 @@ The project structure has been reorganized to improve modularity and maintainabi
 DAO implementations are now separated under dao/impl, and a new service layer has been introduced to handle business logic and validation before DAO interaction.
 
 ```bash
-📦 AlexandriaLMS
-├── 📂 src
-│   ├── 📂 com
-│   │   └── 📂 alexandrialms
-│   │       ├── 📂 dao
-│   │       │   ├── 📂 impl                     # NEW: DAO implementations
-│   │       │   │   ├── AuthorDAO.java
-│   │       │   │   ├── BookDAO.java
-│   │       │   │   └── (other DAO implementations)
-│   │       │   └── 📂 interfaces
+AlexandriaLMS
+├── src
+│   ├── com
+│   │   └── alexandrialms
+│   │       ├── dao
+│   │       │   ├── impl                  
+│   │       │   │   ├── AuthorDAOImpl.java
+│   │       │   │   ├── BookDAOImpl.java
+│   │       │   │   ├── CategoryDAOImpl.java
+│   │       │   │   ├── UserDAOImpl.java
+│   │       │   │   └── (otros DAO implementations)
+│   │       │   └── interfaces
 │   │       │       ├── AuthorDAOInterface.java
 │   │       │       ├── BookDAOInterface.java
+│   │       │       ├── CategoryDAOInterface.java
+│   │       │       ├── UserDAOInterface.java
 │   │       │       ├── GenericDAO.java
-│   │       │       └── (other DAO interfaces)
+│   │       │       └── (otros DAO interfaces)
 │   │       │    
-│   │       │
-│   │       ├── 📂 model
+│   │       ├── model
 │   │       │   ├── Author.java
 │   │       │   ├── Book.java
-│   │       │   └── (other entity classes)
+│   │       │   ├── Category.java
+│   │       │   ├── User.java
+│   │       │   ├── Copy.java
+│   │       │   ├── Loan.java
+│   │       │   ├── Password.java
+│   │       │   └── LibraryRole.java
 │   │       │
-│   │       ├── 📂 service                     # NEW: Service Layer
-│   │       │   ├── 📂 interfaces
+│   │       ├── service
+│   │       │   ├── interfaces
 │   │       │   │   ├── AuthorServiceInterface.java
 │   │       │   │   ├── BookServiceInterface.java
-│   │       │   │   └── (future service interfaces)
-│   │       │   ├── 📂 impl
+│   │       │   │   ├── CategoryServiceInterface.java
+│   │       │   │   ├── UserServiceInterface.java
+│   │       │   │   └── (futuras service interfaces)
+│   │       │   ├── impl
 │   │       │   │   ├── AuthorServiceImpl.java
-│   │       │   │   └── (future service implementations)
+│   │       │   │   ├── BookServiceImpl.java
+│   │       │   │   ├── CategoryServiceImpl.java
+│   │       │   │   ├── UserServiceImpl.java
+│   │       │   │   └── (futuras service implementations)
 │   │       │
-│   │       ├── 📂 util
+│   │       ├── util
 │   │       │   ├── ValidationHelper.java
-│   │       │   ├── ValidationException.java # NEW: custom exception
 │   │       │   └── DBConnection.java    
 │   │       │
-│   │       └── 📂 test
-│   │           ├── ValidationHelperTest.java
-│   │           └── (other test classes)
+│   │       ├── exceptions
+│   │       │   └── ValidationException.java
+│   │       │
+│   │       └── test
+│   │           ├── AuthorServiceIntegrationTest.java
+│   │           ├── BookServiceIntegrationTest.java
+│   │           ├── CategoryServiceIntegrationTest.java
+│   │           ├── UserServiceIntegrationTest.java
+│   │           └── (otros test classes)
 │   │
-│   └── 📂 resources
+│   └── resources
+│       ├── db.properties
 │       └── (SQL scripts, config files, etc.)
 │
 ├── README.md

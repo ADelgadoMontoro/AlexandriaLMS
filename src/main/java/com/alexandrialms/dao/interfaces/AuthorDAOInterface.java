@@ -11,14 +11,14 @@ public interface AuthorDAOInterface extends GenericDAO<Author, Integer> {
     // NEW SEARCH METHODS
     List<Author> findByFirstName(String firstName);
     List<Author> findByFullName(String firstName, String lastName) ;
-    List<Author> findByNameContaining(String name); // Busca en firstName y lastName
+    List<Author> findByNameContaining(String name); 
     List<Author> findByBirthYear(int year);
     List<Author> findByBirthDateRange(java.time.LocalDate startDate, java.time.LocalDate endDate);
     
     // SEARCH & FILTER METHODS
-    List<Author> searchAuthors(String searchTerm); // Búsqueda en nombre o apellido o nacionalidad
+    List<Author> searchAuthors(String searchTerm); 
     
-    // STATISTICS & AGGREGATION METHODS - NECESITA DE LA VISTA author_books_summary
+    // STATISTICS & AGGREGATION METHODS 
     List<Author> findAuthorsWithBooks();
     List<Author> findAuthorsWithMoreThanXBooks(int minBooks);
     List<Author> findMostProlificAuthors(int limit); 
@@ -35,5 +35,5 @@ public interface AuthorDAOInterface extends GenericDAO<Author, Integer> {
     // BIRTHDATE RELATED METHODS
     List<Author> findAuthorsBornBefore(java.time.LocalDate date);
     List<Author> findAuthorsBornAfter(java.time.LocalDate date);
-    List<Author> findLivingAuthors(); // Nacidos después de 1900, por ejemplo
+    List<Author> findLivingAuthors(); 
 }

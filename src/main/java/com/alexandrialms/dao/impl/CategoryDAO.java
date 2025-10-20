@@ -1,7 +1,6 @@
 package com.alexandrialms.dao.impl;
 
 import com.alexandrialms.dao.interfaces.CategoryDAOInterface;
-import com.alexandrialms.dao.interfaces.GenericDAO;
 import com.alexandrialms.model.Category;
 import com.alexandrialms.util.DBConnection;
 
